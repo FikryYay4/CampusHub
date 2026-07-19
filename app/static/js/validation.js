@@ -1,46 +1,83 @@
-// validation.js — Client-side form validation for order form
+// Client-side form validation for CampusHub order form
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('orderForm');
     if (!form) return;
 
-    form.addEventListener('submit', (e) => {
-        let valid = true;
-        const fields = ['nama_pemesan', 'nim', 'kelas', 'no_whatsapp'];
-
-        // Clear old errors
-        form.querySelectorAll('.js-error').forEach(el => el.remove());
-
-        fields.forEach(name => {
-            const input = form.querySelector(`[name="${name}"]`);
-            if (!input) return;
-            const val = input.value.trim();
-
-            if (!val) {
-                showError(input, 'Field ini wajib diisi.');
-                valid = false;
-            }
-        });
-
-        // WhatsApp format
-        const wa = form.querySelector('[name="no_whatsapp"]');
-        if (wa && wa.value.trim() && !/^08\d{8,13}$/.test(wa.value.trim())) {
-            showError(wa, 'Format: 08xxxxxxxxxx');
-            valid = false;
-        }
-
-        if (!valid) e.preventDefault();
-    });
+    const nameInput = document.getElementById('nama_pemesan');
+    const nimInput = document.getElementById('nim');
+    const kelasInput = document.getElementById('kelas');
+    const waInput = document.getElementById('no_whatsapp');
 
     function showError(input, msg) {
-        const err = document.createElement('span');
-        err.className = 'field-error js-error';
-        err.textContent = msg;
-        input.parentNode.appendChild(err);
-        input.style.borderColor = '#E42B2B';
-        input.addEventListener('input', () => {
-            input.style.borderColor = '';
-            const existing = input.parentNode.querySelector('.js-error');
-            if (existing) existing.remove();
-        }, { once: true });
+        // Remove existing error if any
+        let errorSpan = input.parentNode.querySelector('.field-error');
+        if (!errorSpan) {
+            errorSpan = document.createElement('span');
+            errorSpan.className = 'field-error';
+            input.parentNode.appendChild(errorSpan);
+        }
+        errorSpan.textContent = msg;
+        input.classList.add('input-error');
     }
+
+    function clearError(input) {
+        const errorSpan = input.parentNode.querySelector('.field-error');
+        if (errorSpan) {
+            errorSpan.remove();
+        }
+        input.classList.remove('input-error');
+    }
+
+    form.addEventListener('submit', (e) => {
+        let hasError = false;
+
+        // Name Validation
+        if (!nameInput.value.trim()) {
+            showError(nameInput, 'Nama lengkap wajib diisi.');
+            hasError = true;
+        } else {
+            clearError(nameInput);
+        }
+
+        // NIM Validation
+        if (!nimInput.value.trim()) {
+            showError(nimInput, 'NIM wajib diisi.');
+            hasError = true;
+        } else {
+            clearError(nimInput);
+        }
+
+        // Kelas Validation
+        if (!kelasInput.value.trim()) {
+            showError(kelasInput, 'Kelas wajib diisi.');
+            hasError = true;
+        } else {
+            clearError(kelasInput);
+        }
+
+        // WhatsApp Validation
+        const waValue = waInput.value.trim();
+        const waPattern = /^08\d{8,13}$/;
+        if (!waValue) {
+            showError(waInput, 'Nomor WhatsApp wajib diisi.');
+            hasError = true;
+        } else if (!waPattern.test(waValue)) {
+            showError(waInput, 'Format WhatsApp salah. Contoh: 08xxxxxxxxxx (10-15 digit)');
+            hasError = true;
+        } else {
+            clearError(waInput);
+        }
+
+        if (hasError) {
+            e.preventDefault();
+        }
+    });
+
+    // Realtime clear on input
+    [nameInput, nimInput, kelasInput, waInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', () => clearError(input));
+        }
+    });
 });

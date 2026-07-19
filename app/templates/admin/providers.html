@@ -4,23 +4,24 @@
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 class="section-title">Kelola Provider</h1>
-
-        <div class="filter-bar">
-            <a href="{{ url_for('admin.providers') }}" class="btn btn-sm {{ 'btn-primary' if not status_filter }}">Semua</a>
-            <a href="{{ url_for('admin.providers', status='pending') }}" class="btn btn-sm {{ 'btn-primary' if status_filter == 'pending' }}">Pending</a>
-            <a href="{{ url_for('admin.providers', status='aktif') }}" class="btn btn-sm {{ 'btn-primary' if status_filter == 'aktif' }}">Aktif</a>
-            <a href="{{ url_for('admin.providers', status='ditolak') }}" class="btn btn-sm {{ 'btn-primary' if status_filter == 'ditolak' }}">Ditolak</a>
+        <div class="flex-between">
+            <h1 class="section-title">Kelola Provider</h1>
+            <div class="filter-group">
+                <a href="{{ url_for('admin.providers') }}" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">Semua</a>
+                <a href="{{ url_for('admin.providers', status='pending') }}" class="btn btn-sm {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">Pending</a>
+                <a href="{{ url_for('admin.providers', status='aktif') }}" class="btn btn-sm {% if status_filter == 'aktif' %}btn-primary{% else %}btn-outline{% endif %}">Aktif</a>
+                <a href="{{ url_for('admin.providers', status='ditolak') }}" class="btn btn-sm {% if status_filter == 'ditolak' %}btn-primary{% else %}btn-outline{% endif %}">Ditolak</a>
+            </div>
         </div>
 
         {% if providers %}
-        <div class="table-wrap">
+        <div class="table-wrap" style="margin-top: 24px;">
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>Nama</th>
                         <th>Email</th>
-                        <th>WhatsApp</th>
+                        <th>No. WhatsApp</th>
                         <th>KTM</th>
                         <th>Status</th>
                         <th>Aksi</th>
@@ -29,26 +30,38 @@
                 <tbody>
                     {% for p in providers %}
                     <tr>
-                        <td>{{ p.nama }}</td>
+                        <td><strong>{{ p.nama }}</strong></td>
                         <td>{{ p.email }}</td>
-                        <td>{{ p.no_whatsapp }}</td>
                         <td>
-                            {% if p.ktm_filename %}
-                            <a href="{{ url_for('admin.view_ktm', filename=p.ktm_filename) }}" target="_blank" class="btn btn-sm">Lihat</a>
+                            {% set clean_wa = p.no_whatsapp %}
+                            {% if clean_wa.startswith('08') %}
+                                {% set clean_wa = '628' ~ clean_wa[2:] %}
+                            {% elif clean_wa.startswith('+628') %}
+                                {% set clean_wa = '628' ~ clean_wa[4:] %}
+                            {% endif %}
+                            <a href="https://wa.me/{{ clean_wa }}" target="_blank" style="color:#2C77D2; text-decoration:none;">
+                                💬 {{ p.no_whatsapp }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if p.ktm_url %}
+                            <a href="{{ p.ktm_url }}" target="_blank" class="btn btn-sm btn-outline">Lihat KTM</a>
                             {% else %}
-                            <span class="text-muted">—</span>
+                            <span class="text-muted">Tidak upload</span>
                             {% endif %}
                         </td>
-                        <td><span class="badge badge-{{ p.status }}">{{ p.status }}</span></td>
+                        <td>
+                            <span class="badge badge-{{ p.status }}">{{ p.status | upper }}</span>
+                        </td>
                         <td class="actions">
                             {% if p.status == 'pending' %}
                             <form method="post" action="{{ url_for('admin.approve_provider', pid=p.id) }}" class="inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-success">Approve</button>
+                                <button type="submit" class="btn btn-sm btn-success">Setujui</button>
                             </form>
                             <form method="post" action="{{ url_for('admin.reject_provider', pid=p.id) }}" class="inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-danger">Reject</button>
+                                <button type="submit" class="btn btn-sm btn-danger">Tolak</button>
                             </form>
                             {% else %}
                             <span class="text-muted">—</span>
@@ -60,7 +73,7 @@
             </table>
         </div>
         {% else %}
-        <p class="empty-state">Tidak ada provider.</p>
+        <p class="empty-state" style="margin-top: 24px;">Tidak ada data provider.</p>
         {% endif %}
     </div>
 </section>

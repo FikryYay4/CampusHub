@@ -8,22 +8,24 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="hero">
-    <div class="hero-content">
-        <h1 class="hero-title">Temukan Layanan Mahasiswa<br>di Satu Tempat</h1>
-        <p class="hero-subtitle">Jastip, editing, desain, tutor, dan lainnya — langsung dari sesama mahasiswa.</p>
-        <form class="hero-search" action="{{ url_for('public.service_list') }}" method="get">
-            <input type="text" name="q" placeholder="Cari layanan..." class="search-input" autocomplete="off">
-            <button type="submit" class="btn btn-primary">Cari</button>
-        </form>
-    </div>
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">Temukan Layanan Mahasiswa<br>di Satu Tempat</h1>
+            <p class="hero-subtitle">Jastip, editing, desain, tutor, dan lainnya — langsung dari sesama mahasiswa.</p>
+            <form class="hero-search" action="{{ url_for('public.service_list') }}" method="get">
+                <input type="text" name="q" placeholder="Cari layanan..." class="search-input" autocomplete="off">
+                <button type="submit" class="btn btn-primary">Cari</button>
+            </form>
+        </div>
 
-    <!-- Signature Moment: Fan Cards -->
-    <div class="service-fan" aria-hidden="true">
-        <div class="fan-card fan-card-1">🛒<br>Jastip</div>
-        <div class="fan-card fan-card-2">✏️<br>Editing</div>
-        <div class="fan-card fan-card-3">🎨<br>Desain</div>
-        <div class="fan-card fan-card-4">📚<br>Tutor</div>
-        <div class="fan-card fan-card-5">🖨️<br>Print</div>
+        <!-- Signature Moment: Fan Cards -->
+        <div class="service-fan" aria-hidden="true">
+            <div class="fan-card">🛒<br>Jastip</div>
+            <div class="fan-card">✏️<br>Editing</div>
+            <div class="fan-card">🎨<br>Desain</div>
+            <div class="fan-card">📚<br>Tutor</div>
+            <div class="fan-card">🖨️<br>Print</div>
+        </div>
     </div>
 </section>
 
@@ -49,15 +51,24 @@
         <div class="service-grid">
             {% for svc in services %}
             <a href="{{ url_for('public.service_detail', service_id=svc.id) }}" class="service-card">
-                <div class="card-badge">{{ svc.category.nama_kategori }}</div>
-                <h3 class="card-title">{{ svc.judul }}</h3>
-                <p class="card-provider">oleh {{ svc.provider.nama }}</p>
-                <p class="card-price">Rp {{ "{:,.0f}".format(svc.harga) }}</p>
+                <div class="service-image-wrapper">
+                    {% if svc.image_url %}
+                        <img src="{{ svc.image_url }}" alt="{{ svc.judul }}" class="service-image">
+                    {% else %}
+                        <div class="service-image-placeholder">🎓</div>
+                    {% endif %}
+                </div>
+                <div class="service-content">
+                    <div class="card-badge">{{ svc.category.nama_kategori }}</div>
+                    <h3 class="card-title">{{ svc.judul }}</h3>
+                    <p class="card-provider">oleh {{ svc.provider.nama }}</p>
+                    <p class="card-price">Rp {{ "{:,.0f}".format(svc.harga) }}</p>
+                </div>
             </a>
             {% endfor %}
         </div>
-        <div class="text-center" style="margin-top:24px">
-            <a href="{{ url_for('public.service_list') }}" class="btn btn-primary">Lihat Semua Layanan</a>
+        <div class="text-center" style="margin-top:48px">
+            <a href="{{ url_for('public.service_list') }}" class="btn btn-primary btn-large">Lihat Semua Layanan</a>
         </div>
         {% else %}
         <p class="empty-state">Belum ada layanan tersedia.</p>

@@ -5,76 +5,109 @@
 <section class="section">
     <div class="container">
         <h1 class="section-title">Dashboard Admin</h1>
+        <p class="text-muted">Selamat datang di panel kontrol CampusHub.</p>
 
         <div class="stat-grid">
             <div class="stat-card">
                 <div class="stat-number">{{ stats.providers }}</div>
                 <div class="stat-label">Provider Aktif</div>
             </div>
-            <div class="stat-card stat-card-warning">
+            <div class="stat-card">
                 <div class="stat-number">{{ stats.pending_providers }}</div>
                 <div class="stat-label">Menunggu Verifikasi</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">{{ stats.services }}</div>
-                <div class="stat-label">Total Layanan</div>
+                <div class="stat-label">Jumlah Jasa</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">{{ stats.orders }}</div>
-                <div class="stat-label">Total Pesanan</div>
+                <div class="stat-label">Jumlah Order</div>
             </div>
         </div>
 
-        <div class="admin-nav-grid">
-            <a href="{{ url_for('admin.providers') }}" class="admin-nav-card">👥 Kelola Provider</a>
-            <a href="{{ url_for('admin.categories') }}" class="admin-nav-card">📂 Kelola Kategori</a>
-            <a href="{{ url_for('admin.services') }}" class="admin-nav-card">📋 Kelola Layanan</a>
-        </div>
-
-        <!-- Charts -->
-        <div class="chart-grid">
-            <div class="chart-card">
-                <h3>Layanan per Kategori</h3>
-                <canvas id="catChart"></canvas>
+        <!-- Dynamic Charts -->
+        <div class="chart-grid" style="margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="card-section">
+                <h3 class="card-section-title">Grafik Order Bulanan (6 Bulan Terakhir)</h3>
+                <div class="chart-container" style="position: relative; height:300px;">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
             </div>
-            <div class="chart-card">
-                <h3>Pesanan Bulanan</h3>
-                <canvas id="monthChart"></canvas>
+            <div class="card-section">
+                <h3 class="card-section-title">Distribusi Kategori Jasa</h3>
+                <div class="chart-container" style="position: relative; height:300px;">
+                    <canvas id="categoryChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </section>
-{% endblock %}
 
-{% block extra_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const catData = {{ cat_stats | tojson }};
-    const monthData = {{ monthly | tojson }};
+document.addEventListener('DOMContentLoaded', function() {
+    // Monthly Orders Chart
+    const monthlyData = {{ monthly | tojson }};
+    const monthlyLabels = monthlyData.map(item => item[0]);
+    const monthlyValues = monthlyData.map(item => item[1]);
 
-    new Chart(document.getElementById('catChart'), {
-        type: 'doughnut',
+    const ctx1 = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
         data: {
-            labels: catData.map(c => c[0]),
+            labels: monthlyLabels,
             datasets: [{
-                data: catData.map(c => c[1]),
-                backgroundColor: ['#2C77D2','#1859AA','#307FE2','#FFC107','#E42B2B','#215EA9','#CBDFF8']
+                label: 'Jumlah Order',
+                data: monthlyValues,
+                borderColor: '#2C77D2',
+                backgroundColor: 'rgba(44, 119, 210, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3
             }]
         },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
     });
 
-    new Chart(document.getElementById('monthChart'), {
+    // Category Distribution Chart
+    const catData = {{ cat_stats | tojson }};
+    const catLabels = catData.map(item => item[0]);
+    const catValues = catData.map(item => item[1]);
+
+    const ctx2 = document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctx2, {
         type: 'bar',
         data: {
-            labels: monthData.map(m => m[0] || 'N/A'),
+            labels: catLabels,
             datasets: [{
-                label: 'Pesanan',
-                data: monthData.map(m => m[1]),
-                backgroundColor: '#2C77D2'
+                label: 'Jumlah Jasa',
+                data: catValues,
+                backgroundColor: '#307FE2',
+                borderRadius: 4
             }]
         },
-        options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
     });
+});
 </script>
 {% endblock %}

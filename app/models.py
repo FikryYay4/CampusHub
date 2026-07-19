@@ -16,7 +16,6 @@ class Admin(UserMixin, db.Model):
     def check_password(self, pw):
         return check_password_hash(self.password_hash, pw)
 
-    # For flask-login to distinguish admin vs provider
     @property
     def role(self):
         return 'admin'
@@ -32,7 +31,7 @@ class Provider(UserMixin, db.Model):
     email = db.Column(db.String(128), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     no_whatsapp = db.Column(db.String(20), nullable=False)
-    ktm_filename = db.Column(db.String(256), nullable=True)
+    ktm_path = db.Column(db.String(256), nullable=True)  # Supabase Storage path or local filename
     status = db.Column(db.String(20), default='pending')  # pending / aktif / ditolak
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -69,6 +68,7 @@ class Service(db.Model):
     judul = db.Column(db.String(128), nullable=False)
     deskripsi = db.Column(db.Text, nullable=False)
     harga = db.Column(db.Integer, nullable=False)
+    image_path = db.Column(db.String(256), nullable=True)  # Supabase Storage path or local filename
     status = db.Column(db.String(20), default='active')  # active / inactive
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

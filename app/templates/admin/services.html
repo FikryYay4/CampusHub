@@ -4,14 +4,15 @@
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 class="section-title">Semua Layanan</h1>
+        <h1 class="section-title">Kelola Layanan</h1>
+        <p class="text-muted">Moderasi layanan yang ditawarkan oleh provider.</p>
 
         {% if services %}
-        <div class="table-wrap">
+        <div class="table-wrap" style="margin-top: 24px;">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Judul</th>
+                        <th>Judul Layanan</th>
                         <th>Provider</th>
                         <th>Kategori</th>
                         <th>Harga</th>
@@ -22,15 +23,15 @@
                 <tbody>
                     {% for svc in services %}
                     <tr>
-                        <td>{{ svc.judul }}</td>
+                        <td><strong>{{ svc.judul }}</strong></td>
                         <td>{{ svc.provider.nama }}</td>
                         <td>{{ svc.category.nama_kategori }}</td>
                         <td>Rp {{ "{:,.0f}".format(svc.harga) }}</td>
-                        <td><span class="badge badge-{{ svc.status }}">{{ svc.status }}</span></td>
-                        <td>
+                        <td><span class="badge badge-{{ svc.status }}">{{ svc.status | upper }}</span></td>
+                        <td class="actions">
                             <form method="post" action="{{ url_for('admin.delete_service', sid=svc.id) }}" class="inline" onsubmit="return confirm('Hapus layanan ini?')">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-danger">Hapus</button>
+                                <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                             </form>
                         </td>
                     </tr>
@@ -39,7 +40,7 @@
             </table>
         </div>
         {% else %}
-        <p class="empty-state">Belum ada layanan.</p>
+        <p class="empty-state" style="margin-top: 24px;">Belum ada layanan terdaftar di sistem.</p>
         {% endif %}
     </div>
 </section>

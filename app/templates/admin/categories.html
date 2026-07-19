@@ -6,41 +6,55 @@
     <div class="container">
         <h1 class="section-title">Kelola Kategori</h1>
 
-        <form method="post" action="{{ url_for('admin.add_category') }}" class="inline-form">
-            {{ form.hidden_tag() }}
-            {{ form.nama_kategori(class="input", placeholder="Nama kategori baru") }}
-            <button type="submit" class="btn btn-primary">+ Tambah</button>
-        </form>
+        <div class="grid-2-1" style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-top: 24px;">
+            <!-- Category List -->
+            <div class="card-section">
+                <h2 class="card-section-title">Daftar Kategori</h2>
+                {% if categories %}
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Kategori</th>
+                                <th>Slug</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in categories %}
+                            <tr>
+                                <td><strong>{{ c.nama_kategori }}</strong></td>
+                                <td><code>{{ c.slug }}</code></td>
+                                <td class="actions">
+                                    <form method="post" action="{{ url_for('admin.delete_category', cid=c.id) }}" class="inline" onsubmit="return confirm('Hapus kategori ini?')">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="empty-state">Belum ada kategori. Silakan tambahkan.</p>
+                {% endif %}
+            </div>
 
-        {% if categories %}
-        <div class="table-wrap" style="margin-top:24px">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Kategori</th>
-                        <th>Slug</th>
-                        <th>Jumlah Layanan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cat in categories %}
-                    <tr>
-                        <td>{{ cat.nama_kategori }}</td>
-                        <td class="text-muted">{{ cat.slug }}</td>
-                        <td>{{ cat.services|length }}</td>
-                        <td>
-                            <form method="post" action="{{ url_for('admin.delete_category', cid=cat.id) }}" class="inline" onsubmit="return confirm('Hapus kategori {{ cat.nama_kategori }}?')">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-danger" {{ 'disabled' if cat.services }}>Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <!-- Add Category Form -->
+            <div class="card-section">
+                <h2 class="card-section-title">Tambah Kategori</h2>
+                <form method="post" action="{{ url_for('admin.categories') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        <label for="nama_kategori">Nama Kategori</label>
+                        {{ form.nama_kategori(class="input", id="nama_kategori", placeholder="Contoh: Jasa Desain Grafis") }}
+                        {% if form.nama_kategori.errors %}<span class="field-error">{{ form.nama_kategori.errors[0] }}</span>{% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Tambah</button>
+                </form>
+            </div>
         </div>
-        {% endif %}
     </div>
 </section>
 {% endblock %}

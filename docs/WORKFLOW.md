@@ -81,7 +81,7 @@ flowchart TD
     C -->|Tidak| B
     C -->|Ya| D[Dashboard Provider]
     D --> E[Tambah / Edit / Hapus Jasa]
-    E --> F["Isi Data: Judul, Kategori, Harga, Deskripsi"]
+    E --> F["Isi Data: Judul, Kategori, Harga, Deskripsi, Gambar"]
     F --> G[Simpan]
     G --> H[Menunggu Verifikasi Admin]
     H --> I{Disetujui Admin?}
@@ -159,3 +159,5 @@ sequenceDiagram
 | Accepted | Provider menerima | Completed |
 | Rejected | Provider menolak | *(akhir)* |
 | Completed | Provider menandai selesai | *(akhir)* |
+
+> Status **Pending** juga dipakai sebagai basis badge notifikasi "Pesanan Baru" di dashboard Provider (FR-17) — begitu status berubah, badge otomatis berkurang tanpa perlu kolom tambahan di database. Detail implementasi ada di `FOLDER_STRUCTURE.md`.

@@ -1,18 +1,13 @@
-// main.js — nav toggle + flash auto-dismiss
-document.addEventListener('DOMContentLoaded', () => {
-    // Mobile nav toggle
-    const toggle = document.getElementById('navToggle');
-    const links = document.getElementById('navLinks');
-    if (toggle && links) {
-        toggle.addEventListener('click', () => links.classList.toggle('active'));
-    }
+// Main JavaScript for CampusHub
 
-    // Auto-dismiss flash messages
-    document.querySelectorAll('.flash').forEach(el => {
-        setTimeout(() => {
-            el.style.opacity = '0';
-            el.style.transition = 'opacity .3s';
-            setTimeout(() => el.remove(), 300);
-        }, 4000);
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    // Navbar toggle for mobile views
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
 });

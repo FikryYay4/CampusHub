@@ -79,16 +79,19 @@ Dibangun dengan **Python (Flask)** dan **SQLite**, sesuai ketentuan teknis UAS, 
 | FR-13 | Hapus Layanan | Admin dapat menghapus layanan yang melanggar ketentuan | Admin | Should | — |
 | FR-14 | Flash message & navigasi | Notifikasi berhasil/gagal + navigasi antar-halaman jelas | Semua | Must | Fitur Wajib #6 |
 | FR-15 | Kontak WhatsApp | Provider menghubungi guest manual pasca-accept | Provider | Should | Catatan alur `DESIGN.md` |
+| FR-16 | Upload gambar layanan | Provider unggah 1 foto per jasa (JPG/PNG/WEBP, maks 2MB) | Provider | Should | — |
+| FR-17 | Notifikasi pesanan baru | Badge jumlah pesanan status Pending di dashboard Provider, diperbarui berkala (polling) | Provider | Should | — |
 
 ## 7. Kebutuhan Non-Fungsional
 
 | Kategori | Ketentuan |
 |---|---|
-| Keamanan | Password di-hash (`werkzeug.security`); proteksi CSRF (Flask-WTF); `login_required` di semua route Provider/Admin; file KTM disimpan di luar `static/`, hanya bisa diakses Admin |
+| Keamanan | Password di-hash (`werkzeug.security`); proteksi CSRF (Flask-WTF); `login_required` di semua route Provider/Admin; KTM di bucket privat Supabase Storage (signed URL, khusus Admin); gambar jasa di bucket publik (memang untuk ditampilkan ke semua orang); `service_role key` Supabase hanya hidup di server, tidak pernah di sisi browser |
 | Usability | Navigasi maksimal 3 klik ke fitur utama; layout responsif (Bootstrap grid) |
 | Performa | Query dashboard terindeks pada foreign key; hindari query N+1 |
-| Portabilitas | SQLite untuk development; kompatibel dimigrasikan ke MySQL/PostgreSQL |
-| Deployment | Publikasi di domain berakhiran `.my.id`, dapat diakses selama masa penilaian |
+| Portabilitas | PostgreSQL (Supabase) dipakai konsisten untuk development & production — opsi yang diperbolehkan di ketentuan UAS §2.1, sekaligus menghindari bug akibat perbedaan dialek SQL |
+| Deployment | Hosting di Vercel (Flask zero-config); custom domain `.my.id` diarahkan lewat Vercel Dashboard |
+| Ketersediaan | Project Supabase gratis auto-pause setelah 7 hari tanpa aktivitas — wajib di-resume manual atau di-ping berkala menjelang masa penilaian (lihat `FOLDER_STRUCTURE.md`) |
 | Maintainability | Struktur folder modular (lihat `FOLDER_STRUCTURE.md`), `requirements.txt` lengkap |
 | Aksesibilitas | Efek animasi/3D menghormati `prefers-reduced-motion` (lihat `DESIGN.md`) |
 
@@ -97,12 +100,14 @@ Dibangun dengan **Python (Flask)** dan **SQLite**, sesuai ketentuan teknis UAS, 
 | Entitas | Atribut Kunci | Relasi |
 |---|---|---|
 | **Admin** | id, username, password_hash | Mengelola Provider & Category (otorisasi/role, bukan FK langsung) |
-| **Provider** | id, nama, email, password_hash, no_whatsapp, ktm_filename (opsional), status (pending/aktif/ditolak) | 1—N ke Service |
+| **Provider** | id, nama, email, password_hash, no_whatsapp, ktm_path (opsional), status (pending/aktif/ditolak) | 1—N ke Service |
 | **Category** | id, nama_kategori, slug | 1—N ke Service |
-| **Service** | id, provider_id (FK), category_id (FK), judul, harga, deskripsi, status, created_at | 1—N ke Order |
+| **Service** | id, provider_id (FK), category_id (FK), judul, harga, deskripsi, image_path (opsional), status, created_at | 1—N ke Order |
 | **Order** | id, service_id (FK), nama_pemesan, nim, kelas, no_whatsapp, catatan, status, created_at | — |
 
 > Catatan: pada sketsa awal `DESIGN.md`, Category digambar bersarang di bawah Provider. Untuk relasi basis data yang lebih baku, Category diperlakukan sebagai tabel master bersama (dikelola Admin) yang direferensikan Service — bukan milik masing-masing provider.
+>
+> `ktm_path` dan `image_path` menyimpan **path file di Supabase Storage**, bukan file-nya langsung (bukan kolom BLOB). Detail upload & retrieval ada di `FOLDER_STRUCTURE.md`.
 
 ## 9. Kategori Layanan Awal (Seed Data)
 

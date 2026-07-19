@@ -14,8 +14,17 @@
             {% if current_user.is_authenticated %}
                 {% if current_user.role == 'admin' %}
                     <a href="{{ url_for('admin.dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('admin.providers') }}" class="nav-link">Provider</a>
+                    <a href="{{ url_for('admin.categories') }}" class="nav-link">Kategori</a>
+                    <a href="{{ url_for('admin.services') }}" class="nav-link">Layanan Admin</a>
                 {% else %}
                     <a href="{{ url_for('provider.dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('provider.orders') }}" class="nav-link">
+                        Pesanan
+                        <span id="pesanan-baru-badge" class="badge bg-danger {% if not pesanan_baru or pesanan_baru == 0 %}d-none{% endif %}">
+                            {{ pesanan_baru if pesanan_baru else 0 }}
+                        </span>
+                    </a>
                 {% endif %}
                 <a href="{{ url_for('auth.logout') }}" class="nav-link nav-link-outline">Logout</a>
             {% else %}
@@ -25,3 +34,7 @@
         </div>
     </div>
 </nav>
+
+{% if current_user.is_authenticated and current_user.role == 'provider' %}
+<script src="{{ url_for('static', filename='js/notifications.js') }}" defer></script>
+{% endif %}

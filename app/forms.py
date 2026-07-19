@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, TextAreaField, SelectField, IntegerField, HiddenField
+from wtforms import StringField, PasswordField, TextAreaField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Email, Length, NumberRange, Regexp, Optional, EqualTo
 
 
@@ -29,6 +29,10 @@ class ServiceForm(FlaskForm):
     category_id = SelectField('Kategori', coerce=int, validators=[DataRequired()])
     harga = IntegerField('Harga (Rp)', validators=[DataRequired(), NumberRange(min=0)])
     deskripsi = TextAreaField('Deskripsi', validators=[DataRequired()])
+    image = FileField('Gambar Layanan (opsional)', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Format: JPG, PNG, atau WEBP'),
+        Optional()
+    ])
 
 
 class OrderForm(FlaskForm):

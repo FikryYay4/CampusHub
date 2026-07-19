@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Pesanan — CampusHub{% endblock %}
+{% block title %}Daftar Pesanan — CampusHub{% endblock %}
 
 {% block content %}
 <section class="section">
@@ -11,10 +11,10 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>ID</th>
                         <th>Layanan</th>
                         <th>Pemesan</th>
-                        <th>NIM</th>
+                        <th>NIM / Kelas</th>
                         <th>WhatsApp</th>
                         <th>Status</th>
                         <th>Aksi</th>
@@ -23,30 +23,40 @@
                 <tbody>
                     {% for o in orders %}
                     <tr>
-                        <td>{{ o.id }}</td>
-                        <td>{{ o.service.judul }}</td>
+                        <td>#{{ o.id }}</td>
+                        <td><strong>{{ o.service.judul }}</strong></td>
                         <td>{{ o.nama_pemesan }}</td>
-                        <td>{{ o.nim }}</td>
+                        <td>{{ o.nim }} ({{ o.kelas }})</td>
                         <td>
-                            <a href="https://wa.me/62{{ o.no_whatsapp[1:] }}" target="_blank" class="wa-link">
-                                {{ o.no_whatsapp }}
+                            {% set clean_wa = o.no_whatsapp %}
+                            {% if clean_wa.startswith('08') %}
+                                {% set clean_wa = '628' ~ clean_wa[2:] %}
+                            {% elif clean_wa.startswith('+628') %}
+                                {% set clean_wa = '628' ~ clean_wa[4:] %}
+                            {% endif %}
+                            <a href="https://wa.me/{{ clean_wa }}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration: none; color: #2C77D2;">
+                                💬 {{ o.no_whatsapp }}
                             </a>
                         </td>
-                        <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+                        <td>
+                            <span class="badge badge-{{ o.status }}">
+                                {{ o.status | upper }}
+                            </span>
+                        </td>
                         <td class="actions">
                             {% if o.status == 'pending' %}
                             <form method="post" action="{{ url_for('provider.update_order', oid=o.id, action='accept') }}" class="inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-success">Accept</button>
+                                <button class="btn btn-sm btn-primary">Terima</button>
                             </form>
                             <form method="post" action="{{ url_for('provider.update_order', oid=o.id, action='reject') }}" class="inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-danger">Reject</button>
+                                <button class="btn btn-sm btn-danger">Tolak</button>
                             </form>
                             {% elif o.status == 'accepted' %}
                             <form method="post" action="{{ url_for('provider.update_order', oid=o.id, action='complete') }}" class="inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-success">Complete</button>
+                                <button class="btn btn-sm btn-success">Selesai</button>
                             </form>
                             {% else %}
                             <span class="text-muted">—</span>
@@ -61,7 +71,9 @@
         <p class="empty-state">Belum ada pesanan masuk.</p>
         {% endif %}
 
-        <p style="margin-top:24px"><a href="{{ url_for('provider.dashboard') }}" class="btn btn-primary">← Dashboard</a></p>
+        <p style="margin-top: 32px;">
+            <a href="{{ url_for('provider.dashboard') }}" class="btn btn-outline">← Kembali ke Dashboard</a>
+        </p>
     </div>
 </section>
 {% endblock %}

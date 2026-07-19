@@ -4,12 +4,17 @@
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 class="section-title">Dashboard Provider</h1>
-        <p class="text-muted">Selamat datang, <strong>{{ current_user.nama }}</strong>!</p>
+        <div class="dashboard-header">
+            <div>
+                <h1 class="section-title">Dashboard Provider</h1>
+                <p class="text-muted">Selamat datang kembali, <strong>{{ current_user.nama }}</strong>!</p>
+            </div>
+            <a href="{{ url_for('provider.add_service') }}" class="btn btn-primary">+ Tambah Layanan</a>
+        </div>
 
         <div class="stat-grid">
             <div class="stat-card">
-                <div class="stat-number">{{ services|length }}</div>
+                <div class="stat-number">{{ services | length }}</div>
                 <div class="stat-label">Layanan Saya</div>
             </div>
             <div class="stat-card">
@@ -22,49 +27,53 @@
             </div>
         </div>
 
-        <div class="section-header">
-            <h2>Layanan Saya</h2>
-            <a href="{{ url_for('provider.add_service') }}" class="btn btn-primary">+ Tambah Layanan</a>
+        <div class="card-section" style="margin-top: 32px;">
+            <h2 class="card-section-title">Daftar Layanan Saya</h2>
+            {% if services %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Judul Layanan</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for svc in services %}
+                        <tr>
+                            <td><strong>{{ svc.judul }}</strong></td>
+                            <td>{{ svc.category.nama_kategori }}</td>
+                            <td>Rp {{ "{:,.0f}".format(svc.harga) }}</td>
+                            <td>
+                                <span class="badge badge-{{ svc.status }}">
+                                    {{ 'Aktif' if svc.status == 'active' else 'Nonaktif' }}
+                                </span>
+                            </td>
+                            <td class="actions">
+                                <a href="{{ url_for('provider.edit_service', sid=svc.id) }}" class="btn btn-sm btn-outline">Edit</a>
+                                <form method="post" action="{{ url_for('provider.delete_service', sid=svc.id) }}" class="inline" onsubmit="return confirm('Hapus layanan ini?')">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="empty-state">Anda belum menambahkan layanan. <a href="{{ url_for('provider.add_service') }}">Mulai tawarkan jasa pertama Anda</a>.</p>
+            {% endif %}
         </div>
 
-        {% if services %}
-        <div class="table-wrap">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Judul</th>
-                        <th>Kategori</th>
-                        <th>Harga</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for svc in services %}
-                    <tr>
-                        <td>{{ svc.judul }}</td>
-                        <td>{{ svc.category.nama_kategori }}</td>
-                        <td>Rp {{ "{:,.0f}".format(svc.harga) }}</td>
-                        <td><span class="badge badge-{{ svc.status }}">{{ svc.status }}</span></td>
-                        <td class="actions">
-                            <a href="{{ url_for('provider.edit_service', sid=svc.id) }}" class="btn btn-sm">Edit</a>
-                            <form method="post" action="{{ url_for('provider.delete_service', sid=svc.id) }}" class="inline" onsubmit="return confirm('Hapus layanan ini?')">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="empty-state">Belum ada layanan. <a href="{{ url_for('provider.add_service') }}">Tambah sekarang</a>.</p>
-        {% endif %}
-
-        <div class="section-header" style="margin-top:32px">
-            <h2>Pesanan Masuk</h2>
-            <a href="{{ url_for('provider.orders') }}" class="btn btn-primary">Lihat Semua</a>
+        <div class="card-section" style="margin-top: 32px;">
+            <div class="flex-between">
+                <h2 class="card-section-title">Pesanan Masuk Terbaru</h2>
+                <a href="{{ url_for('provider.orders') }}" class="btn btn-sm btn-outline">Lihat Semua Pesanan</a>
+            </div>
         </div>
     </div>
 </section>

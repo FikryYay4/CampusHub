@@ -6,13 +6,13 @@
     <div class="container">
         <h1 class="section-title">Daftar Layanan</h1>
 
-        <!-- Search & Filter -->
+        <!-- Search & Filter Bar -->
         <form class="filter-bar" action="{{ url_for('public.service_list') }}" method="get">
-            <input type="text" name="q" value="{{ q }}" placeholder="Cari layanan..." class="input">
+            <input type="text" name="q" value="{{ q if q else '' }}" placeholder="Cari layanan..." class="input">
             <select name="category" class="input">
                 <option value="">Semua Kategori</option>
                 {% for cat in categories %}
-                <option value="{{ cat.slug }}" {{ 'selected' if selected_cat == cat.slug }}>{{ cat.nama_kategori }}</option>
+                <option value="{{ cat.slug }}" {% if selected_cat == cat.slug %}selected{% endif %}>{{ cat.nama_kategori }}</option>
                 {% endfor %}
             </select>
             <button type="submit" class="btn btn-primary">Filter</button>
@@ -22,10 +22,19 @@
         <div class="service-grid">
             {% for svc in services %}
             <a href="{{ url_for('public.service_detail', service_id=svc.id) }}" class="service-card">
-                <div class="card-badge">{{ svc.category.nama_kategori }}</div>
-                <h3 class="card-title">{{ svc.judul }}</h3>
-                <p class="card-provider">oleh {{ svc.provider.nama }}</p>
-                <p class="card-price">Rp {{ "{:,.0f}".format(svc.harga) }}</p>
+                <div class="service-image-wrapper">
+                    {% if svc.image_url %}
+                        <img src="{{ svc.image_url }}" alt="{{ svc.judul }}" class="service-image">
+                    {% else %}
+                        <div class="service-image-placeholder">🎓</div>
+                    {% endif %}
+                </div>
+                <div class="service-content">
+                    <div class="card-badge">{{ svc.category.nama_kategori }}</div>
+                    <h3 class="card-title">{{ svc.judul }}</h3>
+                    <p class="card-provider">oleh {{ svc.provider.nama }}</p>
+                    <p class="card-price">Rp {{ "{:,.0f}".format(svc.harga) }}</p>
+                </div>
             </a>
             {% endfor %}
         </div>

@@ -4,13 +4,14 @@
 {% block content %}
 <section class="section">
     <div class="container">
-        <div class="auth-card">
+        <div class="auth-card animate-fade-in">
             <h1 class="auth-title">{{ 'Edit' if edit else 'Tambah' }} Layanan</h1>
-            <form method="post">
+            <p class="auth-subtitle">Tawarkan jasa terbaik Anda untuk mahasiswa lain</p>
+            <form method="post" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 <div class="form-group">
                     <label for="judul">Judul Layanan</label>
-                    {{ form.judul(class="input", id="judul") }}
+                    {{ form.judul(class="input", id="judul", placeholder="Contoh: Jasa Ketik Tugas Mandiri") }}
                     {% if form.judul.errors %}<span class="field-error">{{ form.judul.errors[0] }}</span>{% endif %}
                 </div>
                 <div class="form-group">
@@ -20,13 +21,18 @@
                 </div>
                 <div class="form-group">
                     <label for="harga">Harga (Rp)</label>
-                    {{ form.harga(class="input", id="harga", type="number", min="0") }}
+                    {{ form.harga(class="input", id="harga", type="number", min="0", placeholder="Masukkan nominal harga") }}
                     {% if form.harga.errors %}<span class="field-error">{{ form.harga.errors[0] }}</span>{% endif %}
                 </div>
                 <div class="form-group">
                     <label for="deskripsi">Deskripsi</label>
-                    {{ form.deskripsi(class="input textarea", id="deskripsi", rows="5") }}
+                    {{ form.deskripsi(class="input textarea", id="deskripsi", rows="5", placeholder="Jelaskan detail layanan Anda...") }}
                     {% if form.deskripsi.errors %}<span class="field-error">{{ form.deskripsi.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="image">Gambar Layanan (opsional)</label>
+                    {{ form.image(class="input", id="image", accept=".jpg,.jpeg,.png,.webp") }}
+                    {% if form.image.errors %}<span class="field-error">{{ form.image.errors[0] }}</span>{% endif %}
                 </div>
                 <button type="submit" class="btn btn-primary btn-full">{{ 'Simpan Perubahan' if edit else 'Tambah Layanan' }}</button>
             </form>

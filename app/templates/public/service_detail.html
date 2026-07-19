@@ -12,11 +12,23 @@
 
         <div class="detail-layout">
             <div class="detail-main">
-                <span class="card-badge">{{ service.category.nama_kategori }}</span>
-                <h1 class="detail-title">{{ service.judul }}</h1>
-                <p class="detail-provider">oleh <strong>{{ service.provider.nama }}</strong></p>
-                <p class="detail-price">Rp {{ "{:,.0f}".format(service.harga) }}</p>
-                <div class="detail-desc">{{ service.deskripsi }}</div>
+                <div class="detail-image-container">
+                    {% if service.image_url %}
+                        <img src="{{ service.image_url }}" alt="{{ service.judul }}" class="detail-image">
+                    {% else %}
+                        <div class="detail-image-placeholder">🎓</div>
+                    {% endif %}
+                </div>
+                <div class="detail-content-wrap">
+                    <span class="card-badge">{{ service.category.nama_kategori }}</span>
+                    <h1 class="detail-title">{{ service.judul }}</h1>
+                    <p class="detail-provider">oleh <strong>{{ service.provider.nama }}</strong></p>
+                    <p class="detail-price">Rp {{ "{:,.0f}".format(service.harga) }}</p>
+                    <div class="detail-desc">
+                        <h3>Deskripsi Layanan</h3>
+                        <p>{{ service.deskripsi | replace('\n', '<br>') | safe }}</p>
+                    </div>
+                </div>
             </div>
 
             <div class="detail-sidebar">
@@ -24,28 +36,29 @@
                 <form method="post" action="{{ url_for('public.order_service', service_id=service.id) }}" class="order-form" id="orderForm">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
-                        <label for="nama_pemesan">Nama</label>
-                        {{ form.nama_pemesan(class="input", id="nama_pemesan", placeholder="Nama lengkap") }}
+                        <label for="nama_pemesan">Nama Lengkap</label>
+                        {{ form.nama_pemesan(class="input", id="nama_pemesan", placeholder="Masukkan nama Anda") }}
                         {% if form.nama_pemesan.errors %}<span class="field-error">{{ form.nama_pemesan.errors[0] }}</span>{% endif %}
                     </div>
                     <div class="form-group">
                         <label for="nim">NIM</label>
-                        {{ form.nim(class="input", id="nim", placeholder="NIM") }}
+                        {{ form.nim(class="input", id="nim", placeholder="Masukkan NIM") }}
                         {% if form.nim.errors %}<span class="field-error">{{ form.nim.errors[0] }}</span>{% endif %}
                     </div>
                     <div class="form-group">
                         <label for="kelas">Kelas</label>
-                        {{ form.kelas(class="input", id="kelas", placeholder="Kelas") }}
+                        {{ form.kelas(class="input", id="kelas", placeholder="Masukkan Kelas") }}
                         {% if form.kelas.errors %}<span class="field-error">{{ form.kelas.errors[0] }}</span>{% endif %}
                     </div>
                     <div class="form-group">
                         <label for="no_whatsapp">No. WhatsApp</label>
-                        {{ form.no_whatsapp(class="input", id="no_whatsapp", placeholder="08xxxxxxxxxx") }}
+                        {{ form.no_whatsapp(class="input", id="no_whatsapp", placeholder="Contoh: 08123456789") }}
                         {% if form.no_whatsapp.errors %}<span class="field-error">{{ form.no_whatsapp.errors[0] }}</span>{% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="catatan">Catatan (opsional)</label>
-                        {{ form.catatan(class="input textarea", id="catatan", placeholder="Catatan tambahan...") }}
+                        <label for="catatan">Catatan Tambahan (opsional)</label>
+                        {{ form.catatan(class="input textarea", id="catatan", rows="3", placeholder="Detail kebutuhan layanan...") }}
+                        {% if form.catatan.errors %}<span class="field-error">{{ form.catatan.errors[0] }}</span>{% endif %}
                     </div>
                     <button type="submit" class="btn btn-primary btn-full">Kirim Pesanan</button>
                 </form>

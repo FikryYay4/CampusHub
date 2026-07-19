@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, send_from_directory
 from app.config import Config
 from app.extensions import db, login_manager, csrf
 from app.models import Admin, Provider
@@ -10,7 +10,7 @@ def create_app():
     app.config.from_object(Config)
 
     os.makedirs(app.instance_path, exist_ok=True)
-    os.makedirs(os.path.join(app.instance_path, 'uploads', 'ktm'), exist_ok=True)
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -18,11 +18,23 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        if user_id.startswith('admin-'):
-            return Admin.query.get(int(user_id.split('-')[1]))
-        elif user_id.startswith('provider-'):
-            return Provider.query.get(int(user_id.split('-')[1]))
+        if not user_id:
+            return None
+        try:
+            role, uid = user_id.split('-', 1)
+            uid = int(uid)
+            if role == 'admin':
+                return Admin.query.get(uid)
+            elif role == 'provider':
+                return Provider.query.get(uid)
+        except Exception:
+            return None
         return None
+
+    # Serve static uploads route when local storage is used
+    @app.route('/uploads/<path:filename>')
+    def static_uploads(filename):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
     from app.routes.public import public_bp
     from app.routes.auth import auth_bp
@@ -42,13 +54,14 @@ def create_app():
 
 
 def _seed(app):
-    """Seed admin + categories on first run."""
     from app.models import Category
+    # Seed default admin if none
     if not Admin.query.first():
         admin = Admin(username='admin')
         admin.set_password('admin123')
         db.session.add(admin)
 
+    # Seed default categories
     seeds = [
         ('Jasa Editing', 'jasa-editing'),
         ('Jasa Desain', 'jasa-desain'),
