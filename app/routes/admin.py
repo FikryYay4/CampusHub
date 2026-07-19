@@ -1,3 +1,4 @@
+import os
 import re
 from functools import wraps
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app, send_from_directory, jsonify
@@ -134,6 +135,24 @@ def delete_category(cid):
 def services():
     svcs = Service.query.order_by(Service.created_at.desc()).all()
     return render_template('admin/services.html', services=svcs)
+
+
+@admin_bp.route('/services/<int:sid>/approve', methods=['POST'])
+@admin_required
+def approve_service(sid):
+    svc = Service.query.get_or_404(sid)
+    svc.status = 'active'
+    db.session.commit()
+    return redirect(url_for('admin.services'))
+
+
+@admin_bp.route('/services/<int:sid>/reject', methods=['POST'])
+@admin_required
+def reject_service(sid):
+    svc = Service.query.get_or_404(sid)
+    svc.status = 'rejected'
+    db.session.commit()
+    return redirect(url_for('admin.services'))
 
 
 @admin_bp.route('/services/<int:sid>/delete', methods=['POST'])

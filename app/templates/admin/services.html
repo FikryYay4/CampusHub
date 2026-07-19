@@ -29,6 +29,26 @@
                         <td>Rp {{ "{:,.0f}".format(svc.harga) }}</td>
                         <td><span class="badge badge-{{ svc.status }}">{{ svc.status | upper }}</span></td>
                         <td class="actions">
+                            {% if svc.status == 'pending' %}
+                            <form method="post" action="{{ url_for('admin.approve_service', sid=svc.id) }}" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-success">Setujui</button>
+                            </form>
+                            <form method="post" action="{{ url_for('admin.reject_service', sid=svc.id) }}" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-danger">Tolak</button>
+                            </form>
+                            {% elif svc.status == 'active' %}
+                            <form method="post" action="{{ url_for('admin.reject_service', sid=svc.id) }}" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-danger">Tolak</button>
+                            </form>
+                            {% elif svc.status == 'rejected' %}
+                            <form method="post" action="{{ url_for('admin.approve_service', sid=svc.id) }}" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-success">Setujui</button>
+                            </form>
+                            {% endif %}
                             <form method="post" action="{{ url_for('admin.delete_service', sid=svc.id) }}" class="inline" onsubmit="return confirm('Hapus layanan ini?')">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-danger">Hapus</button>

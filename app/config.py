@@ -5,6 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
+    ENV = os.environ.get('FLASK_ENV', 'development')
 
     # Database — Supabase PostgreSQL pooler (port 6543) for app,
     # direct (port 5432) for migrations only
@@ -16,6 +17,8 @@ class Config:
 
     # Serverless-friendly pool settings (Vercel)
     SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_size': 1,
+        'max_overflow': 2,
         'pool_pre_ping': True,
         'pool_recycle': 300,
     }

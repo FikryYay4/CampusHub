@@ -58,7 +58,7 @@ def _seed(app):
     # Seed default admin if none
     if not Admin.query.first():
         admin = Admin(username='admin')
-        admin.set_password('admin123')
+        admin.set_password(os.environ.get('ADMIN_PASSWORD', 'admin123_SecureCampusHub'))
         db.session.add(admin)
 
     # Seed default categories

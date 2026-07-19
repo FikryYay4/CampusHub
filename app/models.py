@@ -69,7 +69,7 @@ class Service(db.Model):
     deskripsi = db.Column(db.Text, nullable=False)
     harga = db.Column(db.Integer, nullable=False)
     image_path = db.Column(db.String(256), nullable=True)  # Supabase Storage path or local filename
-    status = db.Column(db.String(20), default='active')  # active / inactive
+    status = db.Column(db.String(20), default='pending')  # pending / active / rejected
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     orders = db.relationship('Order', backref='service', lazy=True, cascade='all, delete-orphan')

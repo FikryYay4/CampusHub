@@ -22,13 +22,15 @@ def _get_supabase():
         return _supabase
     url = current_app.config.get('SUPABASE_URL', '')
     key = current_app.config.get('SUPABASE_KEY', '')
-    if url and key:
-        try:
-            from supabase import create_client
-            _supabase = create_client(url, key)
-            return _supabase
-        except Exception:
-            pass
+    
+    # If in Vercel/production or Supabase variables are partially set, enforce Supabase
+    is_production = os.environ.get('VERCEL') or current_app.config.get('ENV') == 'production'
+    if is_production or (url or key):
+        if not url or not key:
+            raise ValueError("Supabase URL and Key are required in production environment.")
+        from supabase import create_client
+        _supabase = create_client(url, key)
+        return _supabase
     return None
 
 

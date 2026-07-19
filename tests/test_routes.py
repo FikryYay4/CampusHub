@@ -26,7 +26,7 @@ def client(monkeypatch):
         db.create_all()
         # Seed admin
         admin = Admin(username='admin')
-        admin.set_password('admin123')
+        admin.set_password('admin123_SecureCampusHub')
         db.session.add(admin)
         # Seed categories
         cats = [
@@ -67,7 +67,7 @@ def test_register_page(client):
 
 def test_admin_login_and_dashboard(client):
     # Success Login
-    rv = client.post('/login', data={'username': 'admin', 'password': 'admin123'}, follow_redirects=True)
+    rv = client.post('/login', data={'username': 'admin', 'password': 'admin123_SecureCampusHub'}, follow_redirects=True)
     assert rv.status_code == 200
     assert b'Dashboard Admin' in rv.data
 
@@ -99,7 +99,7 @@ def test_provider_register_and_login(client):
 
     # Approve provider using admin session
     # Log in as admin
-    client.post('/login', data={'username': 'admin', 'password': 'admin123'})
+    client.post('/login', data={'username': 'admin', 'password': 'admin123_SecureCampusHub'})
     p = Provider.query.filter_by(email='fikry@example.com').first()
     assert p is not None
     assert p.status == 'pending'
@@ -144,6 +144,10 @@ def test_provider_crud_and_guest_ordering(client):
 
     svc = Service.query.filter_by(judul='Tutor Python Dasar').first()
     assert svc is not None
+
+    # Set service status to active (simulate admin approval)
+    svc.status = 'active'
+    db.session.commit()
 
     # Logout provider
     client.get('/logout')

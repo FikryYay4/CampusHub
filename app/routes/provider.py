@@ -119,11 +119,13 @@ def update_order(oid, action):
     order = Order.query.get_or_404(oid)
     if order.service.provider_id != current_user.id:
         abort(403)
-    if action == 'accept':
+    if action == 'accept' and order.status == 'pending':
         order.status = 'accepted'
-    elif action == 'reject':
+    elif action == 'reject' and order.status == 'pending':
         order.status = 'rejected'
-    elif action == 'complete':
+    elif action == 'complete' and order.status == 'accepted':
         order.status = 'completed'
+    else:
+        abort(400)
     db.session.commit()
     return redirect(url_for('provider.orders'))
