@@ -7,15 +7,44 @@ from app.storage import get_service_image_url
 public_bp = Blueprint('public', __name__)
 
 
+CATEGORY_ICONS = {
+    'jasa-editing': '📝',
+    'jasa-desain': '🎨',
+    'jasa-programming': '💻',
+    'tutor': '📚',
+    'jastip-makanan': '🍔',
+    'jastip-minuman': '🥤',
+    'print-fotokopi': '🖨️',
+}
+
+
 @public_bp.route('/')
 def home():
     cats = Category.query.order_by(Category.nama_kategori).all()
-    # Latest 6 active services
+    for c in cats:
+        c.icon = CATEGORY_ICONS.get(c.slug, '🎓')
+
+    # Featured rows: up to 3 categories that actually have active services,
+    # each showing up to 8 services in a horizontal-scroll row (Itemku-style).
+    featured_rows = []
+    for cat in cats:
+        cat_services = (Service.query
+                         .filter_by(status='active', category_id=cat.id)
+                         .order_by(Service.created_at.desc())
+                         .limit(8).all())
+        if cat_services:
+            for s in cat_services:
+                s.image_url = get_service_image_url(s.image_path)
+            featured_rows.append({'category': cat, 'services': cat_services})
+        if len(featured_rows) >= 3:
+            break
+
+    # Latest 6 active services overall (kept below the featured rows)
     svcs = Service.query.filter_by(status='active').order_by(Service.created_at.desc()).limit(6).all()
-    # Attach image URLs
     for s in svcs:
         s.image_url = get_service_image_url(s.image_path)
-    return render_template('public/home.html', categories=cats, services=svcs)
+
+    return render_template('public/home.html', categories=cats, services=svcs, featured_rows=featured_rows)
 
 
 @public_bp.route('/services')

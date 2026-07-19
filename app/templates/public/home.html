@@ -20,28 +20,68 @@
 
         <!-- Signature Moment: Fan Cards -->
         <div class="service-fan" aria-hidden="true">
-            <div class="fan-card">🛒<br>Jastip</div>
-            <div class="fan-card">✏️<br>Editing</div>
-            <div class="fan-card">🎨<br>Desain</div>
-            <div class="fan-card">📚<br>Tutor</div>
-            <div class="fan-card">🖨️<br>Print</div>
+            {% set fan_items = [
+                ('jastip.png', '🍔', 'Jastip'),
+                ('editing.png', '📝', 'Editing'),
+                ('desain.png', '🎨', 'Desain'),
+                ('tutor.png', '📚', 'Tutor'),
+                ('print.png', '🖨️', 'Print')
+            ] %}
+            {% for icon_file, emoji, label in fan_items %}
+            <div class="fan-card">
+                <div class="fan-card-inner">
+                    <img src="{{ url_for('static', filename='img/icons/' ~ icon_file) }}" alt=""
+                         class="fan-card-icon"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <span class="fan-card-emoji-fallback" style="display:none;">{{ emoji }}</span>
+                    <span class="fan-card-label">{{ label }}</span>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Categories -->
+<!-- Category Icon Nav -->
 <section class="section">
     <div class="container">
         <h2 class="section-title">Kategori Layanan</h2>
-        <div class="category-grid">
+        <div class="category-icon-grid">
             {% for cat in categories %}
-            <a href="{{ url_for('public.service_list', category=cat.slug) }}" class="category-card">
-                <span class="category-name">{{ cat.nama_kategori }}</span>
+            <a href="{{ url_for('public.service_list', category=cat.slug) }}" class="category-icon-item">
+                <span class="category-icon-circle">{{ cat.icon }}</span>
+                <span class="category-icon-label">{{ cat.nama_kategori }}</span>
             </a>
             {% endfor %}
         </div>
     </div>
 </section>
+
+<!-- Featured rows per category, horizontal scroll -->
+{% for row in featured_rows %}
+<section class="section {% if loop.index is odd %}section-alt{% endif %}">
+    <div class="container">
+        <div class="row-header">
+            <h2 class="section-title no-underline">{{ row.category.nama_kategori }}</h2>
+            <a href="{{ url_for('public.service_list', category=row.category.slug) }}" class="see-all-link">Lihat Semua &rarr;</a>
+        </div>
+        <div class="horizontal-scroll-row">
+            {% for svc in row.services %}
+            <a href="{{ url_for('public.service_detail', service_id=svc.id) }}" class="hscroll-card">
+                <div class="hscroll-card-image">
+                    {% if svc.image_url %}
+                        <img src="{{ svc.image_url }}" alt="{{ svc.judul }}">
+                    {% else %}
+                        <span class="service-image-placeholder">🎓</span>
+                    {% endif %}
+                </div>
+                <div class="hscroll-card-title">{{ svc.judul }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endfor %}
 
 <!-- Latest Services -->
 <section class="section section-alt">

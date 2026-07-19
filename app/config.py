@@ -9,19 +9,23 @@ class Config:
 
     # Database — Supabase PostgreSQL pooler (port 6543) for app,
     # direct (port 5432) for migrations only
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
+    db_url = os.environ.get(
         'DATABASE_URL',
         'sqlite:///' + os.path.join(os.path.dirname(basedir), 'instance', 'campushub.db')
     )
+    SQLALCHEMY_DATABASE_URI = db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Serverless-friendly pool settings (Vercel)
     SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_size': 1,
-        'max_overflow': 2,
         'pool_pre_ping': True,
         'pool_recycle': 300,
     }
+    if not db_url.startswith('sqlite'):
+        SQLALCHEMY_ENGINE_OPTIONS.update({
+            'pool_size': 1,
+            'max_overflow': 2,
+        })
 
     # Upload limit 2 MB
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024
