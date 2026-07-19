@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Kelola Layanan — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Semua Layanan</h1>
+
+        {% if services %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Judul</th>
+                        <th>Provider</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for svc in services %}
+                    <tr>
+                        <td>{{ svc.judul }}</td>
+                        <td>{{ svc.provider.nama }}</td>
+                        <td>{{ svc.category.nama_kategori }}</td>
+                        <td>Rp {{ "{:,.0f}".format(svc.harga) }}</td>
+                        <td><span class="badge badge-{{ svc.status }}">{{ svc.status }}</span></td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin.delete_service', sid=svc.id) }}" class="inline" onsubmit="return confirm('Hapus layanan ini?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-danger">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">Belum ada layanan.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

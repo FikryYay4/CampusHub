@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Kelola Kategori — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Kelola Kategori</h1>
+
+        <form method="post" action="{{ url_for('admin.add_category') }}" class="inline-form">
+            {{ form.hidden_tag() }}
+            {{ form.nama_kategori(class="input", placeholder="Nama kategori baru") }}
+            <button type="submit" class="btn btn-primary">+ Tambah</button>
+        </form>
+
+        {% if categories %}
+        <div class="table-wrap" style="margin-top:24px">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Kategori</th>
+                        <th>Slug</th>
+                        <th>Jumlah Layanan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categories %}
+                    <tr>
+                        <td>{{ cat.nama_kategori }}</td>
+                        <td class="text-muted">{{ cat.slug }}</td>
+                        <td>{{ cat.services|length }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin.delete_category', cid=cat.id) }}" class="inline" onsubmit="return confirm('Hapus kategori {{ cat.nama_kategori }}?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-danger" {{ 'disabled' if cat.services }}>Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

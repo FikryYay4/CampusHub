@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}{{ service.judul }} — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{{ url_for('public.service_list') }}">Layanan</a>
+            <span>/</span>
+            <span>{{ service.judul }}</span>
+        </nav>
+
+        <div class="detail-layout">
+            <div class="detail-main">
+                <span class="card-badge">{{ service.category.nama_kategori }}</span>
+                <h1 class="detail-title">{{ service.judul }}</h1>
+                <p class="detail-provider">oleh <strong>{{ service.provider.nama }}</strong></p>
+                <p class="detail-price">Rp {{ "{:,.0f}".format(service.harga) }}</p>
+                <div class="detail-desc">{{ service.deskripsi }}</div>
+            </div>
+
+            <div class="detail-sidebar">
+                <h2 class="sidebar-title">Pesan Layanan Ini</h2>
+                <form method="post" action="{{ url_for('public.order_service', service_id=service.id) }}" class="order-form" id="orderForm">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        <label for="nama_pemesan">Nama</label>
+                        {{ form.nama_pemesan(class="input", id="nama_pemesan", placeholder="Nama lengkap") }}
+                        {% if form.nama_pemesan.errors %}<span class="field-error">{{ form.nama_pemesan.errors[0] }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="nim">NIM</label>
+                        {{ form.nim(class="input", id="nim", placeholder="NIM") }}
+                        {% if form.nim.errors %}<span class="field-error">{{ form.nim.errors[0] }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="kelas">Kelas</label>
+                        {{ form.kelas(class="input", id="kelas", placeholder="Kelas") }}
+                        {% if form.kelas.errors %}<span class="field-error">{{ form.kelas.errors[0] }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="no_whatsapp">No. WhatsApp</label>
+                        {{ form.no_whatsapp(class="input", id="no_whatsapp", placeholder="08xxxxxxxxxx") }}
+                        {% if form.no_whatsapp.errors %}<span class="field-error">{{ form.no_whatsapp.errors[0] }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="catatan">Catatan (opsional)</label>
+                        {{ form.catatan(class="input textarea", id="catatan", placeholder="Catatan tambahan...") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Kirim Pesanan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/validation.js') }}"></script>
+{% endblock %}

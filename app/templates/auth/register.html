@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Daftar Provider — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="auth-card">
+            <h1 class="auth-title">Daftar sebagai Provider</h1>
+            <p class="auth-subtitle">Tawarkan jasa Anda ke sesama mahasiswa</p>
+            <form method="post" action="{{ url_for('auth.register') }}" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap</label>
+                    {{ form.nama(class="input", id="nama") }}
+                    {% if form.nama.errors %}<span class="field-error">{{ form.nama.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    {{ form.email(class="input", id="email", placeholder="email@contoh.com") }}
+                    {% if form.email.errors %}<span class="field-error">{{ form.email.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    {{ form.password(class="input", id="password") }}
+                    {% if form.password.errors %}<span class="field-error">{{ form.password.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Konfirmasi Password</label>
+                    {{ form.confirm_password(class="input", id="confirm_password") }}
+                    {% if form.confirm_password.errors %}<span class="field-error">{{ form.confirm_password.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="no_whatsapp">No. WhatsApp</label>
+                    {{ form.no_whatsapp(class="input", id="no_whatsapp", placeholder="08xxxxxxxxxx") }}
+                    {% if form.no_whatsapp.errors %}<span class="field-error">{{ form.no_whatsapp.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="ktm">Upload KTM (opsional)</label>
+                    {{ form.ktm(class="input", id="ktm", accept=".jpg,.jpeg,.png,.pdf") }}
+                    {% if form.ktm.errors %}<span class="field-error">{{ form.ktm.errors[0] }}</span>{% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Daftar</button>
+            </form>
+            <p class="auth-footer">Sudah punya akun? <a href="{{ url_for('auth.login') }}">Login di sini</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

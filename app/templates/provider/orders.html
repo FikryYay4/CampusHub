@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Pesanan — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Pesanan Masuk</h1>
+
+        {% if orders %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Layanan</th>
+                        <th>Pemesan</th>
+                        <th>NIM</th>
+                        <th>WhatsApp</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in orders %}
+                    <tr>
+                        <td>{{ o.id }}</td>
+                        <td>{{ o.service.judul }}</td>
+                        <td>{{ o.nama_pemesan }}</td>
+                        <td>{{ o.nim }}</td>
+                        <td>
+                            <a href="https://wa.me/62{{ o.no_whatsapp[1:] }}" target="_blank" class="wa-link">
+                                {{ o.no_whatsapp }}
+                            </a>
+                        </td>
+                        <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+                        <td class="actions">
+                            {% if o.status == 'pending' %}
+                            <form method="post" action="{{ url_for('provider.update_order', oid=o.id, action='accept') }}" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-success">Accept</button>
+                            </form>
+                            <form method="post" action="{{ url_for('provider.update_order', oid=o.id, action='reject') }}" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-danger">Reject</button>
+                            </form>
+                            {% elif o.status == 'accepted' %}
+                            <form method="post" action="{{ url_for('provider.update_order', oid=o.id, action='complete') }}" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-success">Complete</button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">Belum ada pesanan masuk.</p>
+        {% endif %}
+
+        <p style="margin-top:24px"><a href="{{ url_for('provider.dashboard') }}" class="btn btn-primary">← Dashboard</a></p>
+    </div>
+</section>
+{% endblock %}

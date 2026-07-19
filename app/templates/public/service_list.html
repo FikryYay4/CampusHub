@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Layanan — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Daftar Layanan</h1>
+
+        <!-- Search & Filter -->
+        <form class="filter-bar" action="{{ url_for('public.service_list') }}" method="get">
+            <input type="text" name="q" value="{{ q }}" placeholder="Cari layanan..." class="input">
+            <select name="category" class="input">
+                <option value="">Semua Kategori</option>
+                {% for cat in categories %}
+                <option value="{{ cat.slug }}" {{ 'selected' if selected_cat == cat.slug }}>{{ cat.nama_kategori }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+
+        {% if services %}
+        <div class="service-grid">
+            {% for svc in services %}
+            <a href="{{ url_for('public.service_detail', service_id=svc.id) }}" class="service-card">
+                <div class="card-badge">{{ svc.category.nama_kategori }}</div>
+                <h3 class="card-title">{{ svc.judul }}</h3>
+                <p class="card-provider">oleh {{ svc.provider.nama }}</p>
+                <p class="card-price">Rp {{ "{:,.0f}".format(svc.harga) }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">Tidak ada layanan ditemukan.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

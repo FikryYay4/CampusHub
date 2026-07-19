@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if edit else 'Tambah' }} Layanan — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="auth-card">
+            <h1 class="auth-title">{{ 'Edit' if edit else 'Tambah' }} Layanan</h1>
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label for="judul">Judul Layanan</label>
+                    {{ form.judul(class="input", id="judul") }}
+                    {% if form.judul.errors %}<span class="field-error">{{ form.judul.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="category_id">Kategori</label>
+                    {{ form.category_id(class="input", id="category_id") }}
+                    {% if form.category_id.errors %}<span class="field-error">{{ form.category_id.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="harga">Harga (Rp)</label>
+                    {{ form.harga(class="input", id="harga", type="number", min="0") }}
+                    {% if form.harga.errors %}<span class="field-error">{{ form.harga.errors[0] }}</span>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi</label>
+                    {{ form.deskripsi(class="input textarea", id="deskripsi", rows="5") }}
+                    {% if form.deskripsi.errors %}<span class="field-error">{{ form.deskripsi.errors[0] }}</span>{% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">{{ 'Simpan Perubahan' if edit else 'Tambah Layanan' }}</button>
+            </form>
+            <p class="auth-footer"><a href="{{ url_for('provider.dashboard') }}">← Kembali ke Dashboard</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

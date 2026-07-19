@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Admin — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Dashboard Admin</h1>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.providers }}</div>
+                <div class="stat-label">Provider Aktif</div>
+            </div>
+            <div class="stat-card stat-card-warning">
+                <div class="stat-number">{{ stats.pending_providers }}</div>
+                <div class="stat-label">Menunggu Verifikasi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.services }}</div>
+                <div class="stat-label">Total Layanan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.orders }}</div>
+                <div class="stat-label">Total Pesanan</div>
+            </div>
+        </div>
+
+        <div class="admin-nav-grid">
+            <a href="{{ url_for('admin.providers') }}" class="admin-nav-card">👥 Kelola Provider</a>
+            <a href="{{ url_for('admin.categories') }}" class="admin-nav-card">📂 Kelola Kategori</a>
+            <a href="{{ url_for('admin.services') }}" class="admin-nav-card">📋 Kelola Layanan</a>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Layanan per Kategori</h3>
+                <canvas id="catChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Pesanan Bulanan</h3>
+                <canvas id="monthChart"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+    const catData = {{ cat_stats | tojson }};
+    const monthData = {{ monthly | tojson }};
+
+    new Chart(document.getElementById('catChart'), {
+        type: 'doughnut',
+        data: {
+            labels: catData.map(c => c[0]),
+            datasets: [{
+                data: catData.map(c => c[1]),
+                backgroundColor: ['#2C77D2','#1859AA','#307FE2','#FFC107','#E42B2B','#215EA9','#CBDFF8']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('monthChart'), {
+        type: 'bar',
+        data: {
+            labels: monthData.map(m => m[0] || 'N/A'),
+            datasets: [{
+                label: 'Pesanan',
+                data: monthData.map(m => m[1]),
+                backgroundColor: '#2C77D2'
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+</script>
+{% endblock %}

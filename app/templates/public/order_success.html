@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Pesanan Terkirim — CampusHub{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container text-center">
+        <div class="success-card">
+            <div class="success-icon">✅</div>
+            <h1>Pesanan Berhasil Dikirim!</h1>
+            <p>Pesanan #{{ order.id }} untuk <strong>{{ order.service.judul }}</strong> sedang menunggu konfirmasi dari provider.</p>
+            <p class="text-muted">Provider akan menghubungi Anda via WhatsApp di {{ order.no_whatsapp }}.</p>
+            <a href="{{ url_for('public.home') }}" class="btn btn-primary" style="margin-top:16px">Kembali ke Beranda</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

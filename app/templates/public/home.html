@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}CampusHub — Platform Layanan Mahasiswa{% endblock %}
+
+{% block extra_head %}
+<script src="{{ url_for('static', filename='js/scroll-effects.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Temukan Layanan Mahasiswa<br>di Satu Tempat</h1>
+        <p class="hero-subtitle">Jastip, editing, desain, tutor, dan lainnya — langsung dari sesama mahasiswa.</p>
+        <form class="hero-search" action="{{ url_for('public.service_list') }}" method="get">
+            <input type="text" name="q" placeholder="Cari layanan..." class="search-input" autocomplete="off">
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </form>
+    </div>
+
+    <!-- Signature Moment: Fan Cards -->
+    <div class="service-fan" aria-hidden="true">
+        <div class="fan-card fan-card-1">🛒<br>Jastip</div>
+        <div class="fan-card fan-card-2">✏️<br>Editing</div>
+        <div class="fan-card fan-card-3">🎨<br>Desain</div>
+        <div class="fan-card fan-card-4">📚<br>Tutor</div>
+        <div class="fan-card fan-card-5">🖨️<br>Print</div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Kategori Layanan</h2>
+        <div class="category-grid">
+            {% for cat in categories %}
+            <a href="{{ url_for('public.service_list', category=cat.slug) }}" class="category-card">
+                <span class="category-name">{{ cat.nama_kategori }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Latest Services -->
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">Layanan Terbaru</h2>
+        {% if services %}
+        <div class="service-grid">
+            {% for svc in services %}
+            <a href="{{ url_for('public.service_detail', service_id=svc.id) }}" class="service-card">
+                <div class="card-badge">{{ svc.category.nama_kategori }}</div>
+                <h3 class="card-title">{{ svc.judul }}</h3>
+                <p class="card-provider">oleh {{ svc.provider.nama }}</p>
+                <p class="card-price">Rp {{ "{:,.0f}".format(svc.harga) }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="text-center" style="margin-top:24px">
+            <a href="{{ url_for('public.service_list') }}" class="btn btn-primary">Lihat Semua Layanan</a>
+        </div>
+        {% else %}
+        <p class="empty-state">Belum ada layanan tersedia.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
