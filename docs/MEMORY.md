@@ -58,3 +58,13 @@ Helper sentral di `app/storage.py` memisahkan perlakuan berkas berdasarkan priva
 ## 6. Pengujian
 
 - **Black-box Testing**: Menggunakan `pytest` untuk menguji seluruh alur pendaftaran, login, CRUD jasa, pemesanan, verifikasi admin, hingga transisi status order.
+
+---
+
+## 7. Visual & Animasi
+
+- **Logo Icon**: Navbar menggunakan gambar mascot dari `Icon/icon_maskot/` yang disalin ke `app/static/img/logo.png`. Ditampilkan sebagai bulatan 32x32px dengan border kuning (`accent-yellow`) dan glow shadow.
+- **Brand Text Shine**: Teks "CampusHub" di navbar menggunakan gradient text animation (`brand-shine`) — sapuan cahaya bergerak dari kanan ke kiri pada teks putih secara berulang. Dilengkapi 3 partikel kecil (`brand-particle`) yang berkedip di sekitar logo. `prefers-reduced-motion` dihormati (animasi nonaktif).
+- **Signature Moment — Kartu Mengipas (Fan Cards)**: 5 kartu kategori (Jastip, Editing, Desain, Tutor, Print) ditumpuk lalu mengipas terbuka menggunakan `IntersectionObserver`. Setiap kartu memiliki ikon PNG dari `app/static/img/icons/` dengan fallback ke emoji. Idle bob animation (naik-turun halus) dimainkan sebelum fan-out. Setelah fan-out, kartu bergantian ke depan secara cycling (`is-active` poker-slide) tiap 2.2 detik. Fallback timeout 300ms menjamin animasi jalan meskipun IntersectionObserver terlambat trigger.
+- **Kategori Icon Grid**: 7 kategori ditampilkan sebagai baris ikon bulat (emoji) + label, menggunakan CSS flex wrap. Setiap ikon memiliki hover effect (translateY + background change).
+- **Featured Rows**: Maksimal 3 baris kategori yang sudah punya jasa aktif, masing-masing horizontal-scroll dengan tautan "Lihat Semua →". Hanya kategori dengan jasa aktif yang ditampilkan untuk menghindari baris kosong.

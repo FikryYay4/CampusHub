@@ -23,17 +23,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }, CYCLE_MS);
     }
 
+    // Force fan open after load delay — hero is usually above fold,
+    // but IntersectionObserver can miss it on fast loads
+    window.setTimeout(() => {
+        if (!fan.classList.contains('is-open')) {
+            fan.classList.add('is-open');
+            window.setTimeout(startCycle, 900);
+        }
+    }, 300);
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
-                fan.classList.add('is-open');
-                // Let the fan-out transition (900ms) settle before the cards start
-                // taking turns sliding to the front, like riffling through a hand of cards.
-                window.setTimeout(startCycle, 900);
-                observer.disconnect(); // Fan-out itself only plays once
+                if (!fan.classList.contains('is-open')) {
+                    fan.classList.add('is-open');
+                    window.setTimeout(startCycle, 900);
+                }
+                observer.disconnect();
             }
         });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.05 });
 
     observer.observe(fan);
 });
