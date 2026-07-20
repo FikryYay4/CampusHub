@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cards = Array.from(fan.querySelectorAll('.fan-card'));
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const CYCLE_MS = 2200;
+    const CYCLE_MS = 2000;
     let activeIndex = Math.floor(cards.length / 2); // start on the center card
     let cycleTimer = null;
 
