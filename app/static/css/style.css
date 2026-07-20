@@ -386,7 +386,7 @@ a:hover {
     object-fit: contain;
 }
 
-.fan-card-emoji-fallback {
+.fan-card-emoji {
     font-size: 30px;
     line-height: 1;
 }

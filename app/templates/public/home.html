@@ -21,19 +21,16 @@
         <!-- Signature Moment: Fan Cards -->
         <div class="service-fan" aria-hidden="true">
             {% set fan_items = [
-                ('jastip.png', '🍔', 'Jastip'),
-                ('editing.png', '📝', 'Editing'),
-                ('desain.png', '🎨', 'Desain'),
-                ('tutor.png', '📚', 'Tutor'),
-                ('print.png', '🖨️', 'Print')
+                ('🍔', 'Jastip'),
+                ('📝', 'Editing'),
+                ('🎨', 'Desain'),
+                ('📚', 'Tutor'),
+                ('🖨️', 'Print')
             ] %}
-            {% for icon_file, emoji, label in fan_items %}
+            {% for emoji, label in fan_items %}
             <div class="fan-card">
                 <div class="fan-card-inner">
-                    <img src="{{ url_for('static', filename='img/icons/' ~ icon_file) }}" alt=""
-                         class="fan-card-icon"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <span class="fan-card-emoji-fallback" style="display:none;">{{ emoji }}</span>
+                    <span class="fan-card-emoji">{{ emoji }}</span>
                     <span class="fan-card-label">{{ label }}</span>
                 </div>
             </div>
