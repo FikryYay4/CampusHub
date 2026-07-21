@@ -25,9 +25,10 @@ def _get_supabase():
     
     # If in Vercel/production or Supabase variables are partially set, enforce Supabase
     is_production = os.environ.get('VERCEL') or current_app.config.get('ENV') == 'production'
-    if is_production or (url or key):
-        if not url or not key:
-            raise ValueError("Supabase URL and Key are required in production environment.")
+    if is_production and not (url and key):
+        # Supabase not configured; fall through to local storage
+        return None
+    if url and key:
         from supabase import create_client
         _supabase = create_client(url, key)
         return _supabase

@@ -53,9 +53,14 @@ def create_app():
 
     with app.app_context():
         # Only seed if table is empty to avoid duplicate errors
-        if not db.engine.dialect.has_table(db.engine.connect(), 'admin'):
-            db.create_all()
-            _seed(app)
+        try:
+            if not db.engine.dialect.has_table(db.engine.connect(), 'admin'):
+                db.create_all()
+                _seed(app)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            raise
 
     return app
 
