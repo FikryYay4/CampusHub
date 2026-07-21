@@ -6,16 +6,13 @@ from app.models import Admin, Provider
 
 
 def create_app():
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
     app.config.from_object(Config)
 
     # Use /tmp for writable directories on Vercel
     upload_path = os.environ.get('UPLOAD_FOLDER', os.path.join('/tmp', 'uploads'))
     os.makedirs(upload_path, exist_ok=True)
     app.config['UPLOAD_FOLDER'] = upload_path
-    
-    # Disable instance_relative_config on Vercel to avoid writable instance_path issues
-    app.instance_path = upload_path
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -50,6 +47,19 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(provider_bp)
     app.register_blueprint(admin_bp)
+
+    # Inject pesanan_baru for provider navbar
+    @app.context_processor
+    def inject_pesanan_baru():
+        from flask_login import current_user
+        from app.models import Order, Service
+        pesanan_baru = 0
+        if current_user.is_authenticated and current_user.role == 'provider':
+            pesanan_baru = Order.query.join(Service).filter(
+                Service.provider_id == current_user.id,
+                Order.status == 'pending'
+            ).count()
+        return {'pesanan_baru': pesanan_baru}
 
     # Log all 500 errors to Vercel runtime logs
     @app.errorhandler(500)
