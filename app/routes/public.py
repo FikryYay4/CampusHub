@@ -42,7 +42,7 @@ def home():
     for s in svcs:
         s.image_url = get_service_image_url(s.image_path)
 
-    return render_template('public/home.html', categories=cats, services=svcs, featured_rows=featured_rows)
+    return render_template('pages/home.html', categories=cats, services=svcs, featured_rows=featured_rows)
 
 
 @public_bp.route('/services')
@@ -62,7 +62,7 @@ def service_list():
     for s in svcs:
         s.image_url = get_service_image_url(s.image_path)
 
-    return render_template('public/service_list.html',
+    return render_template('pages/service_list.html',
                            services=svcs,
                            categories=cats,
                            q=q,
@@ -74,7 +74,7 @@ def service_detail(service_id):
     svc = Service.query.get_or_404(service_id)
     form = OrderForm()
     svc.image_url = get_service_image_url(svc.image_path)
-    return render_template('public/service_detail.html', service=svc, form=form)
+    return render_template('pages/service_detail.html', service=svc, form=form)
 
 
 @public_bp.route('/services/<int:service_id>/order', methods=['POST'])
@@ -93,6 +93,6 @@ def order_service(service_id):
         )
         db.session.add(order)
         db.session.commit()
-        return render_template('public/order_success.html', order=order)
+        return render_template('pages/order_success.html', order=order)
     svc.image_url = get_service_image_url(svc.image_path)
-    return render_template('public/service_detail.html', service=svc, form=form), 400
+    return render_template('pages/service_detail.html', service=svc, form=form), 400

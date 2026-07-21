@@ -9,14 +9,6 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Bypass Vercel _vendor Flask _get_source_fast bug — force FileSystemLoader
-    with app.app_context():
-        _ = app.jinja_env  # trigger lazy initialization
-        from jinja2 import FileSystemLoader
-        app.jinja_env.loader = FileSystemLoader(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-        )
-
     # Use /tmp for writable directories on Vercel
     upload_path = os.environ.get('UPLOAD_FOLDER', os.path.join('/tmp', 'uploads'))
     os.makedirs(upload_path, exist_ok=True)
@@ -47,17 +39,6 @@ def create_app():
         import traceback
         tb = traceback.format_exc()
         print("TRACE:" + tb.replace("\n", "\\n"))
-        import os
-        print("CWD:" + os.getcwd())
-        print("ROOT:" + app.root_path)
-        print("FILE__:" + __file__)
-        tdir = os.path.join(app.root_path, 'templates')
-        print("TDIR:" + tdir)
-        print("TEXIST:" + str(os.path.isdir(tdir)))
-        if os.path.isdir(tdir):
-            for dirpath, dirnames, filenames in os.walk(tdir):
-                print(f"DIR:{dirpath} // {','.join(filenames)}")
-        print("APP_DIRS:" + ",".join(os.listdir(app.root_path)))
         return "Internal Server Error", 500
 
     # Serve static uploads route when local storage is used
