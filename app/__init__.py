@@ -9,7 +9,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-
+    # Use FileSystemLoader directly (Vercel _vendor Flask DispatchingJinjaLoader broken)
+    from jinja2 import FileSystemLoader
+    app.jinja_loader = FileSystemLoader(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+    )
 
     # Use /tmp for writable directories on Vercel
     upload_path = os.environ.get('UPLOAD_FOLDER', os.path.join('/tmp', 'uploads'))
