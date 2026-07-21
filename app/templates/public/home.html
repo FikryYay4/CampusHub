@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}CampusHub — Platform Layanan Mahasiswa{% endblock %}
+{% block title %}CampusHub  Platform Layanan Mahasiswa{% endblock %}
 
 {% block extra_head %}
 <script src="{{ url_for('static', filename='js/scroll-effects.js') }}" defer></script>
@@ -11,7 +11,7 @@
     <div class="hero-container">
         <div class="hero-content">
             <h1 class="hero-title">Temukan Layanan Mahasiswa<br>di Satu Tempat</h1>
-            <p class="hero-subtitle">Jastip, editing, desain, tutor, dan lainnya — langsung dari sesama mahasiswa.</p>
+            <p class="hero-subtitle">Jastip, editing, desain, tutor, dan lainnya  langsung dari sesama mahasiswa.</p>
             <form class="hero-search" action="{{ url_for('public.service_list') }}" method="get">
                 <input type="text" name="q" placeholder="Cari layanan..." class="search-input" autocomplete="off">
                 <button type="submit" class="btn btn-primary">Cari</button>
@@ -21,16 +21,19 @@
         <!-- Signature Moment: Fan Cards -->
         <div class="service-fan" aria-hidden="true">
             {% set fan_items = [
-                ('🍔', 'Jastip'),
-                ('📝', 'Editing'),
-                ('🎨', 'Desain'),
-                ('📚', 'Tutor'),
-                ('🖨️', 'Print')
+                ('jastip.png', '', 'Jastip'),
+                ('editing.png', '', 'Editing'),
+                ('desain.png', '', 'Desain'),
+                ('tutor.png', '', 'Tutor'),
+                ('print.png', '', 'Print')
             ] %}
-            {% for emoji, label in fan_items %}
+            {% for icon_file, emoji, label in fan_items %}
             <div class="fan-card">
                 <div class="fan-card-inner">
-                    <span class="fan-card-emoji">{{ emoji }}</span>
+                    <img src="{{ url_for('static', filename='img/icons/' ~ icon_file) }}" alt=""
+                         class="fan-card-icon"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <span class="fan-card-emoji" style="display:none;">{{ emoji }}</span>
                     <span class="fan-card-label">{{ label }}</span>
                 </div>
             </div>
@@ -46,7 +49,12 @@
         <div class="category-icon-grid">
             {% for cat in categories %}
             <a href="{{ url_for('public.service_list', category=cat.slug) }}" class="category-icon-item">
-                <span class="category-icon-circle">{{ cat.icon }}</span>
+                <span class="category-icon-circle">
+                    <img src="{{ url_for('static', filename='img/icons/' ~ cat.icon_file) }}" alt=""
+                         class="category-icon-img"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <span class="category-icon-emoji" style="display:none;">{{ cat.icon }}</span>
+                </span>
                 <span class="category-icon-label">{{ cat.nama_kategori }}</span>
             </a>
             {% endfor %}
@@ -69,7 +77,7 @@
                     {% if svc.image_url %}
                         <img src="{{ svc.image_url }}" alt="{{ svc.judul }}">
                     {% else %}
-                        <span class="service-image-placeholder">🎓</span>
+                        <span class="service-image-placeholder"></span>
                     {% endif %}
                 </div>
                 <div class="hscroll-card-title">{{ svc.judul }}</div>
@@ -92,7 +100,7 @@
                     {% if svc.image_url %}
                         <img src="{{ svc.image_url }}" alt="{{ svc.judul }}" class="service-image">
                     {% else %}
-                        <div class="service-image-placeholder">🎓</div>
+                        <div class="service-image-placeholder"></div>
                     {% endif %}
                 </div>
                 <div class="service-content">

@@ -8,13 +8,13 @@ public_bp = Blueprint('public', __name__)
 
 
 CATEGORY_ICONS = {
-    'jasa-editing': '📝',
-    'jasa-desain': '🎨',
-    'jasa-programming': '💻',
-    'tutor': '📚',
-    'jastip-makanan': '🍔',
-    'jastip-minuman': '🥤',
-    'print-fotokopi': '🖨️',
+    'jasa-desain': 'jasa-desain.png',
+    'jasa-editing': 'jasa-editing.png',
+    'jasa-programming': 'jasa-programming.png',
+    'tutor': 'tutor.png',
+    'jastip-makanan': 'jastip-makanan.png',
+    'jastip-minuman': 'jastip-minuman.png',
+    'print-fotokopi': 'print-fotokopi.png',
 }
 
 
@@ -22,10 +22,9 @@ CATEGORY_ICONS = {
 def home():
     cats = Category.query.order_by(Category.nama_kategori).all()
     for c in cats:
-        c.icon = CATEGORY_ICONS.get(c.slug, '🎓')
+        c.icon = '' # Emoji backup not strictly needed anymore with new image design
+        c.icon_file = CATEGORY_ICONS.get(c.slug, 'default.png')
 
-    # Featured rows: up to 3 categories that actually have active services,
-    # each showing up to 8 services in a horizontal-scroll row (Itemku-style).
     featured_rows = []
     for cat in cats:
         cat_services = (Service.query
@@ -39,7 +38,6 @@ def home():
         if len(featured_rows) >= 3:
             break
 
-    # Latest 6 active services overall (kept below the featured rows)
     svcs = Service.query.filter_by(status='active').order_by(Service.created_at.desc()).limit(6).all()
     for s in svcs:
         s.image_url = get_service_image_url(s.image_path)
