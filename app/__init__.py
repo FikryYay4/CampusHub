@@ -51,15 +51,30 @@ def create_app():
     app.register_blueprint(provider_bp)
     app.register_blueprint(admin_bp)
 
+    # Log all 500 errors to Vercel runtime logs
+    @app.errorhandler(500)
+    def handle_500(e):
+        import traceback
+        traceback.print_exception(type(e), e, e.__traceback__)
+        return "Internal Server Error", 500
+
     # Initialize database — tables may already exist, so failure is non-fatal
     with app.app_context():
+        print(f"ROOT PATH: {app.root_path}")
+        print(f"TEMPLATE FOLDER: {app.template_folder}")
+        from pathlib import Path
+        print(f"templates/ exists: {Path(app.root_path, 'templates').exists()}")
+        if Path(app.root_path, 'templates').exists():
+            for f in Path(app.root_path, 'templates').rglob('*'):
+                print(f"  template: {f.relative_to(app.root_path)}")
         try:
             db.create_all()
             _seed(app)
+            print("DB init + seed OK")
         except Exception as e:
             import traceback
             traceback.print_exc()
-            # Don't crash — tables may already exist from another cold start
+            print(f"DB init failed (non-fatal): {e}")
 
     return app
 
