@@ -51,16 +51,16 @@ def create_app():
     app.register_blueprint(provider_bp)
     app.register_blueprint(admin_bp)
 
-    with app.app_context():
-        # Only seed if table is empty to avoid duplicate errors
-        try:
-            if not db.engine.dialect.has_table(db.engine.connect(), 'admin'):
-                db.create_all()
-                _seed(app)
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            raise
+    # Comment out DB init to isolate startup crash
+    # with app.app_context():
+    #     try:
+    #         if not db.engine.dialect.has_table(db.engine.connect(), 'admin'):
+    #             db.create_all()
+    #             _seed(app)
+    #     except Exception as e:
+    #         import traceback
+    #         traceback.print_exc()
+    #         raise
 
     return app
 
