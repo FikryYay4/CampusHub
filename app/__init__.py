@@ -9,6 +9,8 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+
+
     # Use /tmp for writable directories on Vercel
     upload_path = os.environ.get('UPLOAD_FOLDER', os.path.join('/tmp', 'uploads'))
     os.makedirs(upload_path, exist_ok=True)
