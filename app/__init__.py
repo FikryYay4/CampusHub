@@ -61,7 +61,16 @@ def create_app():
             ).count()
         return {'pesanan_baru': pesanan_baru}
 
-    # Initialize database moved to CLI / migration step to prevent Vercel startup crash
+    # Initialize database — tables may already exist, so failure is non-fatal
+    with app.app_context():
+        try:
+            db.create_all()
+            _seed(app)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            print(f"DB init failed (non-fatal): {e}")
+
     return app
 
 
