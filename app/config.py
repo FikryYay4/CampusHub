@@ -11,7 +11,7 @@ class Config:
     # direct (port 5432) for migrations only
     db_url = os.environ.get(
         'DATABASE_URL',
-        'sqlite:///' + os.path.join(os.path.dirname(basedir), 'instance', 'campushub.db')
+        'sqlite:////tmp/campushub.db'
     )
     SQLALCHEMY_DATABASE_URI = db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -35,4 +35,4 @@ class Config:
     SUPABASE_KEY = os.environ.get('SUPABASE_KEY', '')
 
     # Local upload fallback (when Supabase not configured)
-    UPLOAD_FOLDER = os.path.join(os.path.dirname(basedir), 'instance', 'uploads')
+    UPLOAD_FOLDER = os.path.join('/tmp', 'uploads')

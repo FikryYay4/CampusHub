@@ -10,10 +10,12 @@ def create_app():
     app.config.from_object(Config)
 
     # Use /tmp for writable directories on Vercel
-    import tempfile
     upload_path = os.environ.get('UPLOAD_FOLDER', os.path.join('/tmp', 'uploads'))
     os.makedirs(upload_path, exist_ok=True)
     app.config['UPLOAD_FOLDER'] = upload_path
+    
+    # Disable instance_relative_config on Vercel to avoid writable instance_path issues
+    app.instance_path = upload_path
 
     db.init_app(app)
     login_manager.init_app(app)
