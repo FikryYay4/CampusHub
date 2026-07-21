@@ -9,8 +9,11 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
 
-    os.makedirs(app.instance_path, exist_ok=True)
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    # Use /tmp for writable directories on Vercel
+    import tempfile
+    upload_path = os.environ.get('UPLOAD_FOLDER', os.path.join('/tmp', 'uploads'))
+    os.makedirs(upload_path, exist_ok=True)
+    app.config['UPLOAD_FOLDER'] = upload_path
 
     db.init_app(app)
     login_manager.init_app(app)
