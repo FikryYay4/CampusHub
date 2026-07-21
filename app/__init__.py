@@ -51,16 +51,15 @@ def create_app():
     app.register_blueprint(provider_bp)
     app.register_blueprint(admin_bp)
 
-    # Comment out DB init to isolate startup crash
-    # with app.app_context():
-    #     try:
-    #         if not db.engine.dialect.has_table(db.engine.connect(), 'admin'):
-    #             db.create_all()
-    #             _seed(app)
-    #     except Exception as e:
-    #         import traceback
-    #         traceback.print_exc()
-    #         raise
+    # Initialize database — tables may already exist, so failure is non-fatal
+    with app.app_context():
+        try:
+            db.create_all()
+            _seed(app)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            # Don't crash — tables may already exist from another cold start
 
     return app
 
