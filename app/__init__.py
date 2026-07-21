@@ -47,6 +47,17 @@ def create_app():
         import traceback
         tb = traceback.format_exc()
         print("TRACE:" + tb.replace("\n", "\\n"))
+        import os
+        print("CWD:" + os.getcwd())
+        print("ROOT:" + app.root_path)
+        print("FILE__:" + __file__)
+        tdir = os.path.join(app.root_path, 'templates')
+        print("TDIR:" + tdir)
+        print("TEXIST:" + str(os.path.isdir(tdir)))
+        if os.path.isdir(tdir):
+            for dirpath, dirnames, filenames in os.walk(tdir):
+                print(f"DIR:{dirpath} // {','.join(filenames)}")
+        print("APP_DIRS:" + ",".join(os.listdir(app.root_path)))
         return "Internal Server Error", 500
 
     # Serve static uploads route when local storage is used
