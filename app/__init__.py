@@ -52,8 +52,10 @@ def create_app():
     app.register_blueprint(admin_bp)
 
     with app.app_context():
-        db.create_all()
-        _seed(app)
+        # Only seed if table is empty to avoid duplicate errors
+        if not db.engine.dialect.has_table(db.engine.connect(), 'admin'):
+            db.create_all()
+            _seed(app)
 
     return app
 
