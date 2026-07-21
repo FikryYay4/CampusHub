@@ -21,7 +21,8 @@ def _get_supabase():
     if _supabase is not None:
         return _supabase
     url = current_app.config.get('SUPABASE_URL', '')
-    key = current_app.config.get('SUPABASE_KEY', '')
+    # Prefer service_role key (full access); fall back to anon key
+    key = os.environ.get('SUPABASE_SERVICE_KEY') or current_app.config.get('SUPABASE_KEY', '')
     
     # If in Vercel/production or Supabase variables are partially set, enforce Supabase
     is_production = os.environ.get('VERCEL') or current_app.config.get('ENV') == 'production'
