@@ -1,5 +1,6 @@
 import os
 from flask import Flask, send_from_directory
+from werkzeug.exceptions import HTTPException
 from app.config import Config
 from app.extensions import db, login_manager, csrf
 from app.models import Admin, Provider
@@ -36,6 +37,8 @@ def create_app():
     # Log all unhandled errors to Vercel runtime logs
     @app.errorhandler(Exception)
     def handle_error(e):
+        if isinstance(e, HTTPException):
+            return e
         import traceback
         tb = traceback.format_exc()
         print("TRACE:" + tb.replace("\n", "\\n"))

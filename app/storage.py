@@ -76,8 +76,12 @@ def get_ktm_url(ktm_path, expires_in=300):
         return None
     sb = _get_supabase()
     if sb:
-        result = sb.storage.from_(KTM_BUCKET).create_signed_url(ktm_path, expires_in)
-        return result.get('signedURL') or result.get('signedUrl')
+        try:
+            result = sb.storage.from_(KTM_BUCKET).create_signed_url(ktm_path, expires_in)
+            return result.get('signedURL') or result.get('signedUrl')
+        except Exception:
+            # File not in Supabase (uploaded locally), return None
+            return None
     # Local fallback
     from flask import url_for
     return url_for('admin.view_ktm', filename=ktm_path)
