@@ -36,9 +36,9 @@ def create_app():
     # Log all unhandled errors to Vercel runtime logs
     @app.errorhandler(Exception)
     def handle_error(e):
-        import traceback, sys
-        traceback.print_exc()
-        print(f"UNHANDLED: {e}", file=sys.stderr)
+        import traceback
+        tb = traceback.format_exc()
+        print("TRACE:" + tb.replace("\n", "\\n"))
         return "Internal Server Error", 500
 
     # Serve static uploads route when local storage is used
