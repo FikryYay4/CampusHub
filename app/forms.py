@@ -18,9 +18,9 @@ class ProviderRegisterForm(FlaskForm):
         DataRequired(),
         Regexp(r'^08\d{8,13}$', message='Format: 08xxxxxxxxxx')
     ])
-    ktm = FileField('Upload KTM (opsional)', validators=[
+    ktm = FileField('Upload KTM', validators=[
+        DataRequired('KTM wajib diupload'),
         FileAllowed(['jpg', 'jpeg', 'png', 'pdf'], 'Format: JPG, PNG, atau PDF'),
-        Optional()
     ])
 
 

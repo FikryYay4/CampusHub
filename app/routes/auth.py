@@ -43,9 +43,10 @@ def register():
             flash('Email sudah terdaftar.', 'error')
             return render_template('auth/register.html', form=form)
 
-        ktm_path = None
-        if form.ktm.data:
-            ktm_path = upload_ktm(form.ktm.data)
+        ktm_path = upload_ktm(form.ktm.data)
+        if not ktm_path:
+            flash('Gagal upload KTM. Periksa format file (JPG/PNG/PDF).', 'error')
+            return render_template('auth/register.html', form=form)
 
         provider = Provider(
             nama=form.nama.data,
