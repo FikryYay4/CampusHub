@@ -86,20 +86,22 @@ def create_app():
 
 
 def _ensure_storage_buckets(app):
-    """Create Supabase storage buckets if missing. Non-fatal on failure."""
+    """Create Supabase storage buckets if missing. Uses raw REST API."""
     url = app.config.get('SUPABASE_URL', '')
     svc_key = os.environ.get('SUPABASE_SERVICE_KEY', '')
     if not (url and svc_key):
         print("SKIP bucket creation: SUPABASE_SERVICE_KEY not set")
         return
     try:
-        from supabase import create_client
-        sb = create_client(url, svc_key)
-        existing = [b.name for b in sb.storage.list_buckets()]
+        import httpx
         from app.storage import KTM_BUCKET, SERVICE_IMG_BUCKET
+        headers = {"authorization": f"Bearer {svc_key}", "apikey": svc_key}
+        api = f"{url}/storage/v1/bucket"
+        existing = [b["name"] for b in httpx.get(api, headers=headers).json()]
         for bucket, public in [(KTM_BUCKET, False), (SERVICE_IMG_BUCKET, True)]:
             if bucket not in existing:
-                sb.storage.create_bucket(bucket, {"public": public})
+                r = httpx.post(api, headers=headers, json={"name": bucket, "public": public})
+                r.raise_for_status()
                 print(f"Created bucket: {bucket}")
     except Exception as e:
         print(f"Bucket creation skipped (non-fatal): {e}")
