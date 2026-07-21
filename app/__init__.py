@@ -69,6 +69,9 @@ def create_app():
             ).count()
         return {'pesanan_baru': pesanan_baru}
 
+    # Ensure Supabase storage buckets (non-fatal)
+    _ensure_storage_buckets(app)
+
     # Initialize database — tables may already exist, so failure is non-fatal
     with app.app_context():
         try:
@@ -80,6 +83,26 @@ def create_app():
             print(f"DB init failed (non-fatal): {e}")
 
     return app
+
+
+def _ensure_storage_buckets(app):
+    """Create Supabase storage buckets if missing. Non-fatal on failure."""
+    url = app.config.get('SUPABASE_URL', '')
+    svc_key = os.environ.get('SUPABASE_SERVICE_KEY', '')
+    if not (url and svc_key):
+        print("SKIP bucket creation: SUPABASE_SERVICE_KEY not set")
+        return
+    try:
+        from supabase import create_client
+        sb = create_client(url, svc_key)
+        existing = [b.name for b in sb.storage.list_buckets()]
+        from app.storage import KTM_BUCKET, SERVICE_IMG_BUCKET
+        for bucket, public in [(KTM_BUCKET, False), (SERVICE_IMG_BUCKET, True)]:
+            if bucket not in existing:
+                sb.storage.create_bucket(bucket, {"public": public})
+                print(f"Created bucket: {bucket}")
+    except Exception as e:
+        print(f"Bucket creation skipped (non-fatal): {e}")
 
 
 def _seed(app):
